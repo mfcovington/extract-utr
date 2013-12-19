@@ -10,41 +10,55 @@ use autodie;
 use feature 'say';
 use Data::Printer;
 
-my %coding_regions;
+my $gff_file = $ARGV[0];
 
-my $gff_header = <DATA>;
-check_gff_version(3, $gff_header);
+my $coding_regions = extract_cds_from_gff( $gff_file );
+p $coding_regions;
 
-while ( my $feature = <DATA> ) {
-    next if $feature =~ /^#/;
-    my ( $chr, $type, $start, $end, $strand, $attributes ) =
-      ( split /\t/, $feature )[ 0, 2 .. 4, 6, 8 ];
-    next unless $type eq "CDS";
+exit;
 
-    my ( $gene ) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
-    $coding_regions{$gene}{chr}    = $chr;
-    $coding_regions{$gene}{strand} = $strand;
-    push @{ $coding_regions{$gene}{pos} }, [ $start, $end ];
-}
+sub extract_cds_from_gff {
+    my $gff_file = shift;
 
-for my $id ( keys %coding_regions ) {
-    my $strand = $coding_regions{$id}{strand};
-    my ( $start, $end );
-    if ( $strand eq '+' ) {
-        $start = $coding_regions{$id}{pos}[0][0];
-        $end   = $coding_regions{$id}{pos}[-1][1];
+    # open my $gff_fh, "<", $gff_file;
+
+    my $gff_header = <DATA>;
+    check_gff_version(3, $gff_header);
+
+    my %coding_regions;
+
+    while ( my $feature = <DATA> ) {
+        next if $feature =~ /^#/;
+        my ( $chr, $type, $start, $end, $strand, $attributes ) =
+          ( split /\t/, $feature )[ 0, 2 .. 4, 6, 8 ];
+        next unless $type eq "CDS";
+
+        my ( $gene ) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
+        $coding_regions{$gene}{chr}    = $chr;
+        $coding_regions{$gene}{strand} = $strand;
+        push @{ $coding_regions{$gene}{pos} }, [ $start, $end ];
     }
-    elsif ( $strand eq '-' ) {
-        $end   = $coding_regions{$id}{pos}[0][0];
-        $start = $coding_regions{$id}{pos}[-1][1];
+    # close $gff_fh;
+
+    for my $id ( keys %coding_regions ) {
+        my $strand = $coding_regions{$id}{strand};
+        my ( $start, $end );
+        if ( $strand eq '+' ) {
+            $start = $coding_regions{$id}{pos}[0][0];
+            $end   = $coding_regions{$id}{pos}[-1][1];
+        }
+        elsif ( $strand eq '-' ) {
+            $end   = $coding_regions{$id}{pos}[0][0];
+            $start = $coding_regions{$id}{pos}[-1][1];
+        }
+        else { die "Problem with strand info for $id\n" }
+
+        $coding_regions{$id}{start} = $start;
+        $coding_regions{$id}{end}   = $end;
     }
-    else { die "Problem with strand info for $id\n" }
 
-    $coding_regions{$id}{start} = $start;
-    $coding_regions{$id}{end}   = $end;
+    return \%coding_regions;
 }
-
-p %coding_regions;
 
 sub check_gff_version {
     my ( $required_version, $gff_version ) = @_;
