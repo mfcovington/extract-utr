@@ -9,7 +9,8 @@ use warnings;
 use autodie;
 use feature 'say';
 
-check_gff_version(3, <DATA>);
+my $gff_header = <DATA>;
+check_gff_version(3, $gff_header);
 
 sub check_gff_version {
     my ( $required_version, $gff_version ) = @_;
