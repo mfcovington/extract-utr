@@ -17,11 +17,12 @@ check_gff_version(3, $gff_header);
 
 while ( my $feature = <DATA> ) {
     next if $feature =~ /^#/;
-    my ( $type, $start, $end, $strand, $attributes ) =
-      ( split /\t/, $feature )[ 2 .. 4, 6, 8 ];
+    my ( $chr, $type, $start, $end, $strand, $attributes ) =
+      ( split /\t/, $feature )[ 0, 2 .. 4, 6, 8 ];
     next unless $type eq "CDS";
 
     my ( $gene ) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
+    $coding_regions{$gene}{chr}    = $chr;
     $coding_regions{$gene}{strand} = $strand;
     push @{ $coding_regions{$gene}{pos} }, [ $start, $end ];
 }
