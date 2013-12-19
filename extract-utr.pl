@@ -18,6 +18,8 @@ while ( my $feature = <DATA> ) {
       ( split /\t/, $feature )[ 2 .. 4, 6, 8 ];
     next unless $type eq "CDS";
     say "$type-$start-$end-$strand-$attributes";
+    my ( $gene ) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
+    say $gene;
 }
 
 sub check_gff_version {
