@@ -72,3 +72,27 @@ SL2.40ch00	ITAG_eugene	CDS	551218	551250	.	+	0	ID=CDS:Solyc00g005040.2.1.2;Paren
 SL2.40ch00	ITAG_eugene	intron	551251	551342	.	+	.	ID=intron:Solyc00g005040.2.1.3;Parent=mRNA:Solyc00g005040.2.1;from_BOGAS=1
 SL2.40ch00	ITAG_eugene	exon	551343	551576	.	+	0	ID=exon:Solyc00g005040.2.1.4;Parent=mRNA:Solyc00g005040.2.1;from_BOGAS=1
 SL2.40ch00	ITAG_eugene	CDS	551343	551576	.	+	0	ID=CDS:Solyc00g005040.2.1.3;Parent=mRNA:Solyc00g005040.2.1;from_BOGAS=1
+###
+SL2.40ch00	ITAG_eugene	gene	570544	575454	.	-	.	Alias=Solyc00g005050;ID=gene:Solyc00g005050.2;Name=Solyc00g005050.2;from_BOGAS=1;length=4911
+SL2.40ch00	ITAG_eugene	mRNA	570544	575454	.	-	.	ID=mRNA:Solyc00g005050.2.1;Name=Solyc00g005050.2.1;Note=Arabinogalactan protein (AHRD V1 ***- B6SST2_MAIZE);Parent=gene:Solyc00g005050.2;from_BOGAS=1;length=4911;nb_exon=5
+SL2.40ch00	ITAG_eugene	exon	570544	570897	.	-	.	ID=exon:Solyc00g005050.2.1.5;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	three_prime_UTR	570544	570803	.	-	.	ID=three_prime_UTR:Solyc00g005050.2.1.0;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	CDS	570804	570897	.	-	1	ID=CDS:Solyc00g005050.2.1.5;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	intron	570898	571002	.	-	.	ID=intron:Solyc00g005050.2.1.5;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	exon	571003	571208	.	-	1	ID=exon:Solyc00g005050.2.1.4;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	CDS	571003	571208	.	-	0	ID=CDS:Solyc00g005050.2.1.4;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	intron	571209	571284	.	-	.	ID=intron:Solyc00g005050.2.1.4;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	exon	571285	571356	.	-	0	ID=exon:Solyc00g005050.2.1.3;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	CDS	571285	571356	.	-	0	ID=CDS:Solyc00g005050.2.1.3;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	intron	571357	574466	.	-	.	ID=intron:Solyc00g005050.2.1.3;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	exon	574467	574572	.	-	0	ID=exon:Solyc00g005050.2.1.2;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	CDS	574467	574572	.	-	1	ID=CDS:Solyc00g005050.2.1.2;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	intron	574573	575209	.	-	.	ID=intron:Solyc00g005050.2.1.2;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	exon	575210	575454	.	-	1	ID=exon:Solyc00g005050.2.1.1;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	CDS	575210	575319	.	-	0	ID=CDS:Solyc00g005050.2.1.1;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	five_prime_UTR	575320	575454	.	-	.	ID=five_prime_UTR:Solyc00g005050.2.1.0;Parent=mRNA:Solyc00g005050.2.1;from_BOGAS=1
+###
+SL2.40ch00	ITAG_eugene	gene	723746	724018	.	-	.	Alias=Solyc00g005060;ID=gene:Solyc00g005060.1;Name=Solyc00g005060.1;from_BOGAS=1;length=273
+SL2.40ch00	ITAG_eugene	mRNA	723746	724018	.	-	.	ID=mRNA:Solyc00g005060.1.1;Name=Solyc00g005060.1.1;Note=Unknown Protein (AHRD V1);Parent=gene:Solyc00g005060.1;from_BOGAS=1;length=273;nb_exon=1;eugene_evidence_code=10F0H0E0IEG
+SL2.40ch00	ITAG_eugene	exon	723746	724018	.	-	0	ID=exon:Solyc00g005060.1.1.1;Parent=mRNA:Solyc00g005060.1.1;from_BOGAS=1
+SL2.40ch00	ITAG_eugene	CDS	723746	724018	.	-	0	ID=CDS:Solyc00g005060.1.1.1;Parent=mRNA:Solyc00g005060.1.1;from_BOGAS=1
