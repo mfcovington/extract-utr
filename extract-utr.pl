@@ -30,22 +30,7 @@ sub extract_cds_from_gff {
     build_coding_regions_hash( \%coding_regions );
     # close $gff_fh;
 
-    for my $id ( keys %coding_regions ) {
-        my $strand = $coding_regions{$id}{strand};
-        my ( $start, $end );
-        if ( $strand eq '+' ) {
-            $start = $coding_regions{$id}{pos}[0][0];
-            $end   = $coding_regions{$id}{pos}[-1][1];
-        }
-        elsif ( $strand eq '-' ) {
-            $end   = $coding_regions{$id}{pos}[0][0];
-            $start = $coding_regions{$id}{pos}[-1][1];
-        }
-        else { die "Problem with strand info for $id\n" }
-
-        $coding_regions{$id}{start} = $start;
-        $coding_regions{$id}{end}   = $end;
-    }
+    extract_start_end_of_full_cds( \%coding_regions );
 
     return \%coding_regions;
 }
@@ -70,6 +55,27 @@ sub build_coding_regions_hash {
         $$coding_regions{$gene}{chr}    = $chr;
         $$coding_regions{$gene}{strand} = $strand;
         push @{ $$coding_regions{$gene}{pos} }, [ $start, $end ];
+    }
+}
+
+sub extract_start_end_of_full_cds {
+    my $coding_regions = shift;
+
+    for my $id ( keys %$coding_regions ) {
+        my $strand = $$coding_regions{$id}{strand};
+        my ( $start, $end );
+        if ( $strand eq '+' ) {
+            $start = $$coding_regions{$id}{pos}[0][0];
+            $end   = $$coding_regions{$id}{pos}[-1][1];
+        }
+        elsif ( $strand eq '-' ) {
+            $end   = $$coding_regions{$id}{pos}[0][0];
+            $start = $$coding_regions{$id}{pos}[-1][1];
+        }
+        else { die "Problem with strand info for $id\n" }
+
+        $$coding_regions{$id}{start} = $start;
+        $$coding_regions{$id}{end}   = $end;
     }
 }
 
