@@ -26,7 +26,25 @@ while ( my $feature = <DATA> ) {
     push @{ $coding_regions{$gene}{pos} }, [ $start, $end ];
 }
 
+for my $id ( keys %coding_regions ) {
+    my $strand = $coding_regions{$id}{strand};
+    my ( $start, $end );
+    if ( $strand eq '+' ) {
+        $start = $coding_regions{$id}{pos}[0][0];
+        $end   = $coding_regions{$id}{pos}[-1][1];
+    }
+    elsif ( $strand eq '-' ) {
+        $end   = $coding_regions{$id}{pos}[0][0];
+        $start = $coding_regions{$id}{pos}[-1][1];
+    }
+    else { die "Problem with strand info for $id\n" }
+
+    $coding_regions{$id}{start} = $start;
+    $coding_regions{$id}{end}   = $end;
+}
+
 p %coding_regions;
+
 sub check_gff_version {
     my ( $required_version, $gff_version ) = @_;
     die "Requires gff file to be version $required_version\n"
