@@ -12,6 +12,14 @@ use feature 'say';
 my $gff_header = <DATA>;
 check_gff_version(3, $gff_header);
 
+while ( my $feature = <DATA> ) {
+    next if $feature =~ /^#/;
+    my ( $type, $start, $end, $strand, $attributes ) =
+      ( split /\t/, $feature )[ 2 .. 4, 6, 8 ];
+    next unless $type eq "CDS";
+    say "$type-$start-$end-$strand-$attributes";
+}
+
 sub check_gff_version {
     my ( $required_version, $gff_version ) = @_;
     die "Requires gff file to be version $required_version\n"
