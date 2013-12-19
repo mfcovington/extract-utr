@@ -8,6 +8,9 @@ use strict;
 use warnings;
 use autodie;
 use feature 'say';
+use Data::Printer;
+
+my %coding_regions;
 
 my $gff_header = <DATA>;
 check_gff_version(3, $gff_header);
@@ -17,11 +20,13 @@ while ( my $feature = <DATA> ) {
     my ( $type, $start, $end, $strand, $attributes ) =
       ( split /\t/, $feature )[ 2 .. 4, 6, 8 ];
     next unless $type eq "CDS";
-    say "$type-$start-$end-$strand-$attributes";
+
     my ( $gene ) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
-    say $gene;
+    $coding_regions{$gene}{strand} = $strand;
+    push @{ $coding_regions{$gene}{pos} }, [ $start, $end ];
 }
 
+p %coding_regions;
 sub check_gff_version {
     my ( $required_version, $gff_version ) = @_;
     die "Requires gff file to be version $required_version\n"
