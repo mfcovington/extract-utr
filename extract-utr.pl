@@ -26,18 +26,8 @@ sub extract_cds_from_gff {
     check_gff_version(3, $gff_header);
 
     my %coding_regions;
-
-    while ( my $feature = <DATA> ) {
-        next if $feature =~ /^#/;
-        my ( $chr, $type, $start, $end, $strand, $attributes ) =
-          ( split /\t/, $feature )[ 0, 2 .. 4, 6, 8 ];
-        next unless $type eq "CDS";
-
-        my ( $gene ) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
-        $coding_regions{$gene}{chr}    = $chr;
-        $coding_regions{$gene}{strand} = $strand;
-        push @{ $coding_regions{$gene}{pos} }, [ $start, $end ];
-    }
+    # build_coding_regions_hash( \%coding_regions, $gff_fh );
+    build_coding_regions_hash( \%coding_regions );
     # close $gff_fh;
 
     for my $id ( keys %coding_regions ) {
@@ -64,6 +54,23 @@ sub check_gff_version {
     my ( $required_version, $gff_version ) = @_;
     die "Requires gff file to be version $required_version\n"
       unless $gff_version =~ /$required_version/;
+}
+
+sub build_coding_regions_hash {
+    my ( $coding_regions, $gff_fh ) = @_;
+
+    # while ( my $feature = <$gff_fh> ) {
+    while ( my $feature = <DATA> ) {
+        next if $feature =~ /^#/;
+        my ( $chr, $type, $start, $end, $strand, $attributes ) =
+          ( split /\t/, $feature )[ 0, 2 .. 4, 6, 8 ];
+        next unless $type eq "CDS";
+
+        my ( $gene ) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
+        $$coding_regions{$gene}{chr}    = $chr;
+        $$coding_regions{$gene}{strand} = $strand;
+        push @{ $$coding_regions{$gene}{pos} }, [ $start, $end ];
+    }
 }
 
 __DATA__
