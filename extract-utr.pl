@@ -39,9 +39,19 @@ for my $id ( keys %$coding_regions ) {
     }
     else { die "Problem with strand info for $id\n" }
 
+    say "$id:$strand";
+
     my $utr_seq =
       extract_fa_seq( $genome_fa_file, $chr, $strand, $utr3_start, $utr3_end );
-    say $utr_seq;
+    say length $utr_seq;
+
+    my $gene_seq = extract_fa_seq( $cds_fa_file, $id );
+    say length $gene_seq;
+    $gene_seq = substr $gene_seq, -$gene_length;
+    say length $gene_seq;
+
+    my $combo_seq = "$gene_seq$utr_seq";
+    say length $combo_seq;
 }
 
 # p $coding_regions;
@@ -111,7 +121,9 @@ sub extract_fa_seq {
     chomp @fa_seq;
 
     my $seq = join "", @fa_seq;
-    $seq = reverse $seq if $strand eq '-';
+    $seq = reverse $seq
+      if defined $strand
+      && $strand eq '-';
 
     return $seq;
 }
