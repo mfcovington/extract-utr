@@ -176,6 +176,7 @@ sub trim_seq {
 sub combine_seqs {
     my ( $fiveprime, $threeprime, $utr_seq, $gene_seq ) = @_;
 
+    my $combo_seq;
     if ($fiveprime) {
         $combo_seq = "$utr_seq$gene_seq";
         die "5' functionality not yet implemented.\n";
@@ -183,6 +184,7 @@ sub combine_seqs {
     elsif ($threeprime) {
         $combo_seq = "$gene_seq$utr_seq";
     }
+    return $combo_seq;
 }
 
 sub output_fa {
