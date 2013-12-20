@@ -20,7 +20,7 @@ my $genome_fa_file = "~/git.repos/sample-files/fa/ITAG2.3_genomic.fasta";
 my $output_fa_file = "out.fa";
 
 my $utr_length  = 500;
-my $gene_length = 500;
+my $gene_length = -1;
 
 my $fa_width = 80;
 
@@ -38,7 +38,7 @@ for my $id ( sort keys %$coding_regions ) {
       extract_fa_seq( $genome_fa_file, $chr, $strand, $utr3_start, $utr3_end );
 
     my $gene_seq = extract_fa_seq( $cds_fa_file, $id );
-    $gene_seq = substr $gene_seq, -$gene_length;
+    $gene_seq = substr $gene_seq, -$gene_length unless $gene_length == -1;
 
     my $combo_seq = "$gene_seq$utr_seq";
     output_fa( $id, $combo_seq, $output_fa_fh, $fa_width );
