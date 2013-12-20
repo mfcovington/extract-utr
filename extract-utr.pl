@@ -8,21 +8,32 @@ use strict;
 use warnings;
 use autodie;
 use feature 'say';
+use Getopt::Long;
 
 #TODO: Add README
-#TODO: Get Options
 #TODO: Allow for UTR only (i.e., $gene_length = 0)
 #TODO: Option to get 5'UTR instead of 3'UTR
 
+# Defaults
 my $gff_file = glob "~/git.repos/sample-files/annotation/ITAG2.3_gene_models.gff3";
 my $cds_fa_file    = "~/git.repos/sample-files/fa/ITAG2.3_cds.fasta";
 my $genome_fa_file = "~/git.repos/sample-files/fa/ITAG2.3_genomic.fasta";
 my $output_fa_file = "out.fa";
 
 my $utr_length  = 500;
-my $gene_length = -1;
+my $gene_length = 500;
 
 my $fa_width = 80;
+
+my $options = GetOptions(
+    "gff_file=s"       => \$gff_file,
+    "cds_fa_file=s"    => \$cds_fa_file,
+    "genome_fa_file=s" => \$genome_fa_file,
+    "output_fa_file=s" => \$output_fa_file,
+    "utr_length=i"     => \$utr_length,
+    "gene_length=i"    => \$gene_length,
+    "fa_width=i"       => \$fa_width,
+);
 
 my $coding_regions = extract_cds_from_gff($gff_file);
 
