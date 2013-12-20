@@ -8,7 +8,6 @@ use strict;
 use warnings;
 use autodie;
 use feature 'say';
-use Data::Printer;
 
 my $gff_file = $ARGV[0];
 
@@ -20,33 +19,24 @@ my $gene_length = 500;
 
 my $fa_width = 80;
 
-my $coding_regions = extract_cds_from_gff( $gff_file );
+my $coding_regions = extract_cds_from_gff($gff_file);
 
 for my $id ( keys %$coding_regions ) {
-    my $chr       = $$coding_regions{$id}{chr};
-    my $strand    = $$coding_regions{$id}{strand};
+    my $chr    = $$coding_regions{$id}{chr};
+    my $strand = $$coding_regions{$id}{strand};
 
     my ( $utr3_start, $utr3_end ) =
       find_utr_boundaries( $$coding_regions{$id}, $utr_length );
 
-    say "$id:$strand";
-
     my $utr_seq =
       extract_fa_seq( $genome_fa_file, $chr, $strand, $utr3_start, $utr3_end );
-    say length $utr_seq;
 
     my $gene_seq = extract_fa_seq( $cds_fa_file, $id );
-    say length $gene_seq;
     $gene_seq = substr $gene_seq, -$gene_length;
-    say length $gene_seq;
 
     my $combo_seq = "$gene_seq$utr_seq";
-    say length $combo_seq;
-
     output_fa( $id, $combo_seq, $fa_width );
 }
-
-# p $coding_regions;
 
 exit;
 
@@ -56,7 +46,7 @@ sub extract_cds_from_gff {
     # open my $gff_fh, "<", $gff_file;
 
     my $gff_header = <DATA>;
-    check_gff_version(3, $gff_header);
+    check_gff_version( 3, $gff_header );
 
     my %coding_regions;
     # build_coding_regions_hash( \%coding_regions, $gff_fh );
@@ -84,7 +74,7 @@ sub build_coding_regions_hash {
           ( split /\t/, $feature )[ 0, 2 .. 4, 6, 8 ];
         next unless $type eq "CDS";
 
-        my ( $gene ) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
+        my ($gene) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
         $$coding_regions{$gene}{chr}    = $chr;
         $$coding_regions{$gene}{strand} = $strand;
         push @{ $$coding_regions{$gene}{pos} }, [ $start, $end ];
