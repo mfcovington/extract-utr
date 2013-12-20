@@ -18,6 +18,8 @@ my $genome_fa_file = "~/git.repos/sample-files/fa/ITAG2.3_genomic.fasta";
 my $utr_length  = 500;
 my $gene_length = 500;
 
+my $fa_width = 80;
+
 my $coding_regions = extract_cds_from_gff( $gff_file );
 
 for my $id ( keys %$coding_regions ) {
@@ -52,6 +54,8 @@ for my $id ( keys %$coding_regions ) {
 
     my $combo_seq = "$gene_seq$utr_seq";
     say length $combo_seq;
+
+    output_fa( $id, $combo_seq, $fa_width );
 }
 
 # p $coding_regions;
@@ -126,6 +130,16 @@ sub extract_fa_seq {
       && $strand eq '-';
 
     return $seq;
+}
+
+sub output_fa {
+    my ( $seqid, $seq, $fa_width ) = @_;
+
+    $fa_width //= 80;
+    my @fa_seq = unpack "(A$fa_width)*", $seq;
+
+    say ">$seqid";
+    say for @fa_seq;
 }
 
 __DATA__
