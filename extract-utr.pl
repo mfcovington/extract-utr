@@ -21,13 +21,24 @@ my $gene_length = 500;
 my $coding_regions = extract_cds_from_gff( $gff_file );
 
 for my $id ( keys %$coding_regions ) {
-    my $chr = $$coding_regions{$id}{chr};
-    my $strand = $$coding_regions{$id}{strand};
-    my $end = $$coding_regions{$id}{end};
-    my $utr3_start = $strand eq "+" ? $end + 1 : $end - 1;
-    my $utr3_end =
-      $strand eq "+" ? $end + $utr_length + 1 : $end - $utr_length - 1;
-    say $chr;
+    my $chr       = $$coding_regions{$id}{chr};
+    my $strand    = $$coding_regions{$id}{strand};
+    my $left_pos  = $$coding_regions{$id}{left_pos};
+    my $right_pos = $$coding_regions{$id}{right_pos};
+
+    my $utr3_start;
+    my $utr3_end;
+
+    if ( $strand eq '+' ) {
+        $utr3_start = $right_pos + 1;
+        $utr3_end   = $right_pos + $utr_length + 1;
+    }
+    elsif ( $strand eq '-' ) {
+        $utr3_start = $left_pos - $utr_length - 1;
+        $utr3_end   = $left_pos + 1;
+    }
+    else { die "Problem with strand info for $id\n" }
+
     say $id;
     say $utr3_start;
     say $utr3_end;
@@ -83,20 +94,8 @@ sub extract_start_end_of_full_cds {
     my $coding_regions = shift;
 
     for my $id ( keys %$coding_regions ) {
-        my $strand = $$coding_regions{$id}{strand};
-        my ( $start, $end );
-        if ( $strand eq '+' ) {
-            $start = $$coding_regions{$id}{pos}[0][0];
-            $end   = $$coding_regions{$id}{pos}[-1][1];
-        }
-        elsif ( $strand eq '-' ) {
-            $end   = $$coding_regions{$id}{pos}[0][0];
-            $start = $$coding_regions{$id}{pos}[-1][1];
-        }
-        else { die "Problem with strand info for $id\n" }
-
-        $$coding_regions{$id}{start} = $start;
-        $$coding_regions{$id}{end}   = $end;
+        $$coding_regions{$id}{left_pos}  = $$coding_regions{$id}{pos}[0][0];
+        $$coding_regions{$id}{right_pos} = $$coding_regions{$id}{pos}[-1][1];
     }
 }
 
