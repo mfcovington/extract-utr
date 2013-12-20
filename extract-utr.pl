@@ -47,7 +47,7 @@ sub extract_cds_from_gff {
 
     open my $gff_fh, "<", $gff_file;
 
-    my $gff_header = <DATA>;
+    my $gff_header = <$gff_fh>;
     check_gff_version( 3, $gff_header );
 
     my %coding_regions;
