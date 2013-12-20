@@ -2,12 +2,17 @@
 # Mike Covington
 # created: 2013-12-19
 #
-# Description:
+# Description: Extract genic and extragenic sequence surrounding stop codon
 #
 use strict;
 use warnings;
 use autodie;
 use feature 'say';
+
+#TODO: Add README
+#TODO: Get Options
+#TODO: Allow for UTR only (i.e., $gene_length = 0)
+#TODO: Option to get 5'UTR instead of 3'UTR
 
 my $gff_file = glob "~/git.repos/sample-files/annotation/ITAG2.3_gene_models.gff3";
 my $cds_fa_file    = "~/git.repos/sample-files/fa/ITAG2.3_cds.fasta";
