@@ -39,13 +39,16 @@ for my $id ( keys %$coding_regions ) {
     }
     else { die "Problem with strand info for $id\n" }
 
-    say $id;
-    say $utr3_start;
-    say $utr3_end;
-    system "~/installs/bin/samtools faidx $genome_fa_file $chr:$utr3_start-$utr3_end";
+    my ( $fa_header, @seq ) = `~/installs/bin/samtools faidx $genome_fa_file $chr:$utr3_start-$utr3_end`;
+    chomp @seq;
+    # say "@seq";
+    my $utr_seq = join "", @seq;
+    say "$utr_seq";
+    $utr_seq = reverse $utr_seq if $strand eq '-';
+    say $utr_seq;
 }
 
-p $coding_regions;
+# p $coding_regions;
 
 exit;
 
