@@ -39,12 +39,8 @@ for my $id ( keys %$coding_regions ) {
     }
     else { die "Problem with strand info for $id\n" }
 
-    my ( $fa_header, @seq ) = `~/installs/bin/samtools faidx $genome_fa_file $chr:$utr3_start-$utr3_end`;
-    chomp @seq;
-    # say "@seq";
-    my $utr_seq = join "", @seq;
-    say "$utr_seq";
-    $utr_seq = reverse $utr_seq if $strand eq '-';
+    my $utr_seq =
+      extract_fa_seq( $genome_fa_file, $chr, $utr3_start, $utr3_end, $strand );
     say $utr_seq;
 }
 
@@ -102,6 +98,18 @@ sub extract_start_end_of_full_cds {
     }
 }
 
+sub extract_fa_seq {
+    my ( $fa_file, $seqid, $left_pos, $right_pos, $strand ) = @_;
+
+    my ( $fa_header, @fa_seq ) =
+      `~/installs/bin/samtools faidx $fa_file $seqid:$left_pos-$right_pos`;
+    chomp @fa_seq;
+
+    my $seq = join "", @fa_seq;
+    $seq = reverse $seq if $strand eq '-';
+
+    return $seq;
+}
 __DATA__
 ##gff-version 3
 ##feature-ontology http://song.cvs.sourceforge.net/*checkout*/song/ontology/sofa.obo?revision=1.93
