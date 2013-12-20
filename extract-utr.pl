@@ -31,11 +31,11 @@ for my $id ( keys %$coding_regions ) {
 
     if ( $strand eq '+' ) {
         $utr3_start = $right_pos + 1;
-        $utr3_end   = $right_pos + $utr_length + 1;
+        $utr3_end   = $right_pos + $utr_length;
     }
     elsif ( $strand eq '-' ) {
-        $utr3_start = $left_pos - $utr_length - 1;
-        $utr3_end   = $left_pos + 1;
+        $utr3_start = $left_pos - $utr_length;
+        $utr3_end   = $left_pos - 1;
     }
     else { die "Problem with strand info for $id\n" }
 
