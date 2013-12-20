@@ -12,7 +12,28 @@ use Data::Printer;
 
 my $gff_file = $ARGV[0];
 
+my $cds_fa_file    = "~/git.repos/sample-files/fa/ITAG2.3_cds.fasta";
+my $genome_fa_file = "~/git.repos/sample-files/fa/ITAG2.3_genomic.fasta";
+
+my $utr_length  = 500;
+my $gene_length = 500;
+
 my $coding_regions = extract_cds_from_gff( $gff_file );
+
+for my $id ( keys %$coding_regions ) {
+    my $chr = $$coding_regions{$id}{chr};
+    my $strand = $$coding_regions{$id}{strand};
+    my $end = $$coding_regions{$id}{end};
+    my $utr3_start = $strand eq "+" ? $end + 1 : $end - 1;
+    my $utr3_end =
+      $strand eq "+" ? $end + $utr_length + 1 : $end - $utr_length - 1;
+    say $chr;
+    say $id;
+    say $utr3_start;
+    say $utr3_end;
+    system "~/installs/bin/samtools faidx $genome_fa_file $chr:$utr3_start-$utr3_end";
+}
+
 p $coding_regions;
 
 exit;
