@@ -57,14 +57,8 @@ for my $id ( sort keys %$coding_regions ) {
     my $gene_seq = extract_fa_seq( $cds_fa_file, $id );
     $gene_seq = substr $gene_seq, -$gene_length unless $gene_length == -1;
 
-    my $combo_seq;
-    if ($fiveprime) {
-        $combo_seq = "$utr_seq$gene_seq";
-        die "5' functionality not yet implemented.\n";
-    }
-    elsif ($threeprime) {
-        $combo_seq = "$gene_seq$utr_seq";
-    }
+    my $combo_seq
+        = combine_seqs( $fiveprime, $threeprime, $utr_seq, $gene_seq );
 
     output_fa( $id, $combo_seq, $output_fa_fh, $fa_width );
 }
@@ -172,6 +166,18 @@ sub extract_fa_seq {
       && $strand eq '-';
 
     return $seq;
+}
+
+sub combine_seqs {
+    my ( $fiveprime, $threeprime, $utr_seq, $gene_seq ) = @_;
+
+    if ($fiveprime) {
+        $combo_seq = "$utr_seq$gene_seq";
+        die "5' functionality not yet implemented.\n";
+    }
+    elsif ($threeprime) {
+        $combo_seq = "$gene_seq$utr_seq";
+    }
 }
 
 sub output_fa {
