@@ -42,6 +42,9 @@ my $options = GetOptions(
 die "Specify '--fiveprime' or '--threeprime'\n"
     unless $fiveprime || $threeprime;
 
+die "Specify only one: '--fiveprime' OR '--threeprime'\n"
+    if $fiveprime && $threeprime;
+
 my $coding_regions = extract_cds_from_gff($gff_file);
 
 open my $output_fa_fh, ">", $output_fa_file;
