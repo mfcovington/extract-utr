@@ -25,21 +25,9 @@ my $coding_regions = extract_cds_from_gff( $gff_file );
 for my $id ( keys %$coding_regions ) {
     my $chr       = $$coding_regions{$id}{chr};
     my $strand    = $$coding_regions{$id}{strand};
-    my $left_pos  = $$coding_regions{$id}{left_pos};
-    my $right_pos = $$coding_regions{$id}{right_pos};
 
-    my $utr3_start;
-    my $utr3_end;
-
-    if ( $strand eq '+' ) {
-        $utr3_start = $right_pos + 1;
-        $utr3_end   = $right_pos + $utr_length;
-    }
-    elsif ( $strand eq '-' ) {
-        $utr3_start = $left_pos - $utr_length;
-        $utr3_end   = $left_pos - 1;
-    }
-    else { die "Problem with strand info for $id\n" }
+    my ( $utr3_start, $utr3_end ) =
+      find_utr_boundaries( $$coding_regions{$id}, $utr_length );
 
     say "$id:$strand";
 
@@ -110,6 +98,30 @@ sub extract_start_end_of_full_cds {
         $$coding_regions{$id}{left_pos}  = $$coding_regions{$id}{pos}[0][0];
         $$coding_regions{$id}{right_pos} = $$coding_regions{$id}{pos}[-1][1];
     }
+}
+
+sub find_utr_boundaries {
+    my ( $cds_info, $utr_length ) = @_;
+
+    my $chr       = $$cds_info{chr};
+    my $strand    = $$cds_info{strand};
+    my $left_pos  = $$cds_info{left_pos};
+    my $right_pos = $$cds_info{right_pos};
+
+    my $utr3_start;
+    my $utr3_end;
+
+    if ( $strand eq '+' ) {
+        $utr3_start = $right_pos + 1;
+        $utr3_end   = $right_pos + $utr_length;
+    }
+    elsif ( $strand eq '-' ) {
+        $utr3_start = $left_pos - $utr_length;
+        $utr3_end   = $left_pos - 1;
+    }
+    else { die "Problem with strand info\n" }
+
+    return ( $utr3_start, $utr3_end );
 }
 
 sub extract_fa_seq {
