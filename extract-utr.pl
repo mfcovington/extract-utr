@@ -39,11 +39,7 @@ my $options = GetOptions(
     "threeprime"       => \$threeprime,
 );
 
-die "Specify '--fiveprime' or '--threeprime'\n"
-    unless $fiveprime || $threeprime;
-
-die "Specify only one: '--fiveprime' OR '--threeprime'\n"
-    if $fiveprime && $threeprime;
+check_options( $fiveprime, $threeprime );
 
 my $coding_regions = extract_cds_from_gff($gff_file);
 
@@ -75,6 +71,16 @@ for my $id ( sort keys %$coding_regions ) {
 close $output_fa_fh;
 
 exit;
+
+sub check_options {
+    my ( $fiveprime, $threeprime ) = @_;
+
+    die "Specify '--fiveprime' or '--threeprime'\n"
+        unless $fiveprime || $threeprime;
+
+    die "Specify only one: '--fiveprime' OR '--threeprime'\n"
+        if $fiveprime && $threeprime;
+}
 
 sub extract_cds_from_gff {
     my $gff_file = shift;
