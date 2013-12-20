@@ -25,6 +25,8 @@ my $gene_length = 500;
 
 my $fa_width = 80;
 
+my ( $fiveprime, $threeprime );
+
 my $options = GetOptions(
     "gff_file=s"       => \$gff_file,
     "cds_fa_file=s"    => \$cds_fa_file,
@@ -33,7 +35,12 @@ my $options = GetOptions(
     "utr_length=i"     => \$utr_length,
     "gene_length=i"    => \$gene_length,
     "fa_width=i"       => \$fa_width,
+    "fiveprime"        => \$fiveprime,
+    "threeprime"       => \$threeprime,
 );
+
+die "Specify '--fiveprime' or '--threeprime'\n"
+    unless $fiveprime || $threeprime;
 
 my $coding_regions = extract_cds_from_gff($gff_file);
 
@@ -51,7 +58,15 @@ for my $id ( sort keys %$coding_regions ) {
     my $gene_seq = extract_fa_seq( $cds_fa_file, $id );
     $gene_seq = substr $gene_seq, -$gene_length unless $gene_length == -1;
 
-    my $combo_seq = "$gene_seq$utr_seq";
+    my $combo_seq;
+    if ($fiveprime) {
+        $combo_seq = "$utr_seq$gene_seq";
+        die "5' functionality not yet implemented.\n";
+    }
+    elsif ($threeprime) {
+        $combo_seq = "$gene_seq$utr_seq";
+    }
+
     output_fa( $id, $combo_seq, $output_fa_fh, $fa_width );
 }
 close $output_fa_fh;
