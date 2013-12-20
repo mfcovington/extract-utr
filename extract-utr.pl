@@ -22,7 +22,7 @@ my $fa_width = 80;
 my $coding_regions = extract_cds_from_gff($gff_file);
 
 open my $output_fa_fh, ">", $output_fa_file;
-for my $id ( keys %$coding_regions ) {
+for my $id ( sort keys %$coding_regions ) {
     my $chr    = $$coding_regions{$id}{chr};
     my $strand = $$coding_regions{$id}{strand};
 
