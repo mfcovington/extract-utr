@@ -11,7 +11,6 @@ use feature 'say';
 use Getopt::Long;
 
 #TODO: Add README
-#TODO: Allow for UTR only (i.e., $gene_length = 0)
 
 # Defaults
 my $gff_file = glob "~/git.repos/sample-files/annotation/ITAG2.3_gene_models.gff3";
@@ -56,11 +55,18 @@ for my $id ( sort keys %$coding_regions ) {
         = extract_fa_seq( $samtools_path, $genome_fa_file, $chr, $strand,
         $utr_start, $utr_end );
 
-    my $gene_seq = extract_fa_seq( $samtools_path, $cds_fa_file, $id );
-    $gene_seq = trim_seq( $gene_seq, $gene_length, $fiveprime, $threeprime );
+    my $combo_seq;
+    if ( $gene_length == 0 ) {
+        $combo_seq = $utr_seq;
+    }
+    else {
+        my $gene_seq = extract_fa_seq( $samtools_path, $cds_fa_file, $id );
+        $gene_seq
+            = trim_seq( $gene_seq, $gene_length, $fiveprime, $threeprime );
 
-    my $combo_seq
-        = combine_seqs( $fiveprime, $threeprime, $utr_seq, $gene_seq );
+        $combo_seq
+            = combine_seqs( $fiveprime, $threeprime, $utr_seq, $gene_seq );
+    }
 
     output_fa( $id, $combo_seq, $output_fa_fh, $fa_width );
 }
