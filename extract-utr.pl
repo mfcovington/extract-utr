@@ -58,7 +58,7 @@ for my $id ( sort keys %$coding_regions ) {
         $utr3_start, $utr3_end );
 
     my $gene_seq = extract_fa_seq( $samtools_path, $cds_fa_file, $id );
-    $gene_seq = trim_seq( $gene_seq, $gene_length );
+    $gene_seq = trim_seq( $gene_seq, $gene_length, $fiveprime, $threeprime );
 
     my $combo_seq
         = combine_seqs( $fiveprime, $threeprime, $utr_seq, $gene_seq );
@@ -179,8 +179,14 @@ sub extract_fa_seq {
 }
 
 sub trim_seq {
-    my ( $gene_seq, $gene_length ) = @_;
-    return substr $gene_seq, -$gene_length unless $gene_length == -1;
+    my ( $gene_seq, $gene_length, $fiveprime, $threeprime ) = @_;
+
+    if ( $fiveprime ) {
+        return substr $gene_seq, 0, $gene_length unless $gene_length == -1;
+    }
+    elsif ( $threeprime ) {
+        return substr $gene_seq, -$gene_length unless $gene_length == -1;
+    }
 }
 
 sub combine_seqs {
