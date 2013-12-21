@@ -51,7 +51,7 @@ for my $id ( sort keys %$coding_regions ) {
     my $strand = $$coding_regions{$id}{strand};
 
     my ( $utr3_start, $utr3_end ) =
-      find_utr_boundaries( $$coding_regions{$id}, $utr_length );
+      find_utr_boundaries( $$coding_regions{$id}, $utr_length, $fiveprime );
 
     my $utr_seq
         = extract_fa_seq( $samtools_path, $genome_fa_file, $chr, $strand,
@@ -131,27 +131,31 @@ sub extract_start_end_of_full_cds {
 }
 
 sub find_utr_boundaries {
-    my ( $cds_info, $utr_length ) = @_;
+    my ( $cds_info, $utr_length, $fiveprime ) = @_;
 
     my $chr       = $$cds_info{chr};
     my $strand    = $$cds_info{strand};
     my $left_pos  = $$cds_info{left_pos};
     my $right_pos = $$cds_info{right_pos};
 
-    my $utr3_start;
-    my $utr3_end;
+    my $utr_start;
+    my $utr_end;
+
+    # originally written for 3'
+    # use opposite logic for 5'
+    $strand =~ tr/+-/-+/ if $fiveprime;
 
     if ( $strand eq '+' ) {
-        $utr3_start = $right_pos + 1;
-        $utr3_end   = $right_pos + $utr_length;
+        $utr_start = $right_pos + 1;
+        $utr_end   = $right_pos + $utr_length;
     }
     elsif ( $strand eq '-' ) {
-        $utr3_start = $left_pos - $utr_length;
-        $utr3_end   = $left_pos - 1;
+        $utr_start = $left_pos - $utr_length;
+        $utr_end   = $left_pos - 1;
     }
     else { die "Problem with strand info\n" }
 
-    return ( $utr3_start, $utr3_end );
+    return ( $utr_start, $utr_end );
 }
 
 sub extract_fa_seq {
