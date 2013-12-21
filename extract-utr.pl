@@ -181,11 +181,14 @@ sub extract_fa_seq {
 sub trim_seq {
     my ( $gene_seq, $gene_length, $fiveprime, $threeprime ) = @_;
 
-    if ( $fiveprime ) {
-        return substr $gene_seq, 0, $gene_length unless $gene_length == -1;
+    if ( $gene_length == -1 ) {
+        return $gene_seq;
+    }
+    elsif ( $fiveprime ) {
+        return substr $gene_seq, 0, $gene_length;
     }
     elsif ( $threeprime ) {
-        return substr $gene_seq, -$gene_length unless $gene_length == -1;
+        return substr $gene_seq, -$gene_length;
     }
 }
 
