@@ -9,37 +9,30 @@ use warnings;
 use autodie;
 use Test::More tests => 2;
 
+my $base_extract_cmd = <<CMD;
+../extract-utr.pl \\
+  --gff_file sample-files/ITAG2.3_gene_models.truncated.gff3 \\
+  --cds_fa_file sample-files/ITAG2.3_cds.truncated.fasta \\
+  --genome_fa_file sample-files/ITAG2.3_genomic.truncated.fasta \\
+  --output_fa_file got.fa \\
+CMD
 my $test_name;
 my $extract_cmd;
 
 $test_name = "500-cds+500-3prime";
-$extract_cmd = <<CMD;
-../extract-utr.pl \\
-  --gff_file sample-files/ITAG2.3_gene_models.truncated.gff3 \\
-  --cds_fa_file sample-files/ITAG2.3_cds.truncated.fasta \\
-  --genome_fa_file sample-files/ITAG2.3_genomic.truncated.fasta \\
-  --output_fa_file got.fa \\
-  --threeprime
-CMD
-compare_extracted_utr( $extract_cmd, "sample-files/expect.$test_name.fa", $test_name );
+$extract_cmd = "$base_extract_cmd --threeprime";
+compare_extracted_utr( $extract_cmd, $test_name );
 
 $test_name = "500-cds+500-3prime.60wide";
-$extract_cmd = <<CMD;
-../extract-utr.pl \\
-  --gff_file sample-files/ITAG2.3_gene_models.truncated.gff3 \\
-  --cds_fa_file sample-files/ITAG2.3_cds.truncated.fasta \\
-  --genome_fa_file sample-files/ITAG2.3_genomic.truncated.fasta \\
-  --output_fa_file got.fa \\
-  --fa_width 60 \\
-  --threeprime
-CMD
-compare_extracted_utr( $extract_cmd, "sample-files/expect.$test_name.fa", $test_name );
+$extract_cmd = "$base_extract_cmd --fa_width 60 --threeprime";
+compare_extracted_utr( $extract_cmd, $test_name );
 
 sub compare_extracted_utr {
-    my ( $extract_cmd, $expect_file, $test_name ) = @_;
+    my ( $extract_cmd, $test_name ) = @_;
 
     system($extract_cmd);
 
+    my $expect_file = "sample-files/expect.$test_name.fa";
     open my $expect_fh, "<", $expect_file;
     my @expected = <$expect_fh>;
     close $expect_fh;
@@ -49,5 +42,4 @@ sub compare_extracted_utr {
     close $got_fh;
 
     is_deeply( \@got, \@expected, $test_name );
-
 }
