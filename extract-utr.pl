@@ -176,9 +176,11 @@ sub extract_fa_seq {
     chomp @fa_seq;
 
     my $seq = join "", @fa_seq;
-    $seq = reverse $seq
-      if defined $strand
-      && $strand eq '-';
+
+    if ( defined $strand && $strand eq '-' ) {
+        $seq = reverse $seq;
+        $seq =~ tr/ACGTacgt/TGCAtgca/;
+    }
 
     return $seq;
 }
