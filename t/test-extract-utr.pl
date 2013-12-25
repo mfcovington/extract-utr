@@ -35,13 +35,9 @@ $test_name = "no-cds+500-3prime";
 $extract_cmd = "$base_extract_cmd --gene_length 0 --threeprime";
 compare_extracted_utr( $extract_cmd, $test_name );
 
-TODO: {
-    local $TODO = "Need to make file: expect.500-5prime+500-cds.fa";
-
-    $test_name = "500-5prime+500-cds";
-    $extract_cmd = "$base_extract_cmd --fiveprime";
-    compare_extracted_utr( $extract_cmd, $test_name );
-}
+$test_name = "500-5prime+500-cds";
+$extract_cmd = "$base_extract_cmd --fiveprime";
+compare_extracted_utr( $extract_cmd, $test_name );
 
 sub compare_extracted_utr {
     my ( $extract_cmd, $test_name ) = @_;
