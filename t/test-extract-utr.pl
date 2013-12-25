@@ -7,15 +7,30 @@
 use strict;
 use warnings;
 use autodie;
-use Test::More tests => 1;
+use Test::More tests => 2;
 
-my $test_name = "500-cds+500-3prime";
-my $extract_cmd = <<CMD;
+my $test_name;
+my $extract_cmd;
+
+$test_name = "500-cds+500-3prime";
+$extract_cmd = <<CMD;
 ../extract-utr.pl \\
   --gff_file sample-files/ITAG2.3_gene_models.truncated.gff3 \\
   --cds_fa_file sample-files/ITAG2.3_cds.truncated.fasta \\
   --genome_fa_file sample-files/ITAG2.3_genomic.truncated.fasta \\
   --output_fa_file got.fa \\
+  --threeprime
+CMD
+compare_extracted_utr( $extract_cmd, "sample-files/expect.$test_name.fa", $test_name );
+
+$test_name = "500-cds+500-3prime.60wide";
+$extract_cmd = <<CMD;
+../extract-utr.pl \\
+  --gff_file sample-files/ITAG2.3_gene_models.truncated.gff3 \\
+  --cds_fa_file sample-files/ITAG2.3_cds.truncated.fasta \\
+  --genome_fa_file sample-files/ITAG2.3_genomic.truncated.fasta \\
+  --output_fa_file got.fa \\
+  --fa_width 60 \\
   --threeprime
 CMD
 compare_extracted_utr( $extract_cmd, "sample-files/expect.$test_name.fa", $test_name );
