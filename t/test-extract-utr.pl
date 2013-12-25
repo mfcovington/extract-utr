@@ -42,4 +42,6 @@ sub compare_extracted_utr {
     close $got_fh;
 
     is_deeply( \@got, \@expected, $test_name );
+
+    unlink "got.fa";
 }
