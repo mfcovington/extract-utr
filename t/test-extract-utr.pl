@@ -7,7 +7,7 @@
 use strict;
 use warnings;
 use autodie;
-use Test::More tests => 2;
+use Test::More tests => 4;
 
 my $base_extract_cmd = <<CMD;
 ../extract-utr.pl \\
@@ -25,6 +25,14 @@ compare_extracted_utr( $extract_cmd, $test_name );
 
 $test_name = "500-cds+500-3prime.60wide";
 $extract_cmd = "$base_extract_cmd --fa_width 60 --threeprime";
+compare_extracted_utr( $extract_cmd, $test_name );
+
+$test_name = "full-cds+500-3prime";
+$extract_cmd = "$base_extract_cmd --gene_length -1 --threeprime";
+compare_extracted_utr( $extract_cmd, $test_name );
+
+$test_name = "no-cds+500-3prime";
+$extract_cmd = "$base_extract_cmd --gene_length 0 --threeprime";
 compare_extracted_utr( $extract_cmd, $test_name );
 
 sub compare_extracted_utr {
