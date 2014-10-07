@@ -24,7 +24,7 @@ my $gene_length = 500;
 
 my $fa_width = 80;
 
-my ( $fiveprime, $threeprime );
+my ( $fiveprime, $threeprime, $both );
 
 my $options = GetOptions(
     "gff_file=s"       => \$gff_file,
@@ -37,9 +37,10 @@ my $options = GetOptions(
     "fa_width=i"       => \$fa_width,
     "fiveprime"        => \$fiveprime,
     "threeprime"       => \$threeprime,
+    "both"             => \$both,
 );
 
-check_options( $fiveprime, $threeprime, $samtools_path );
+check_options( $fiveprime, $threeprime, $both, $samtools_path );
 
 my $coding_regions = extract_cds_from_gff($gff_file);
 
@@ -48,24 +49,33 @@ for my $id ( sort keys %$coding_regions ) {
     my $chr    = $$coding_regions{$id}{chr};
     my $strand = $$coding_regions{$id}{strand};
 
-    my ( $utr_start, $utr_end ) =
-      find_utr_boundaries( $$coding_regions{$id}, $utr_length, $fiveprime );
+    $gene_length = -1 if $both;
 
-    my $utr_seq
-        = extract_fa_seq( $samtools_path, $genome_fa_file, $chr, $strand,
-        $utr_start, $utr_end );
+    my $utr_seq = [];
+    if ( $both ) {
+        $$utr_seq[0] = get_utr_seq( $id, $coding_regions, $utr_length, 1,
+            $samtools_path, $genome_fa_file, $chr, $strand );
+        $$utr_seq[1] = get_utr_seq( $id, $coding_regions, $utr_length, 0,
+            $samtools_path, $genome_fa_file, $chr, $strand );
+    }
+    else {
+        $$utr_seq[0]
+            = get_utr_seq( $id, $coding_regions, $utr_length, $fiveprime,
+            $samtools_path, $genome_fa_file, $chr, $strand );
+    }
 
     my $combo_seq;
     if ( $gene_length == 0 ) {
-        $combo_seq = $utr_seq;
+        $combo_seq = $$utr_seq[0];
     }
     else {
         my $gene_seq = extract_fa_seq( $samtools_path, $cds_fa_file, $id );
         $gene_seq
-            = trim_seq( $gene_seq, $gene_length, $fiveprime, $threeprime );
+            = trim_seq( $gene_seq, $gene_length, $fiveprime, $threeprime,
+            $both );
 
-        $combo_seq
-            = combine_seqs( $fiveprime, $threeprime, $utr_seq, $gene_seq );
+        $combo_seq = combine_seqs( $fiveprime, $threeprime, $both, $utr_seq,
+            $gene_seq );
     }
 
     output_fa( $id, $combo_seq, $output_fa_fh, $fa_width );
@@ -75,13 +85,12 @@ close $output_fa_fh;
 exit;
 
 sub check_options {
-    my ( $fiveprime, $threeprime, $samtools_path ) = @_;
+    my ( $fiveprime, $threeprime, $both, $samtools_path ) = @_;
 
-    die "Specify '--fiveprime' or '--threeprime'\n"
-        unless $fiveprime || $threeprime;
-
-    die "Specify only one: '--fiveprime' OR '--threeprime'\n"
-        if $fiveprime && $threeprime;
+    my $def_count = 0;
+    map { $def_count++ if defined $_ } $fiveprime, $threeprime, $both;
+    die "Specify '--fiveprime', '--threeprime', OR '--both'\n"
+        unless $def_count == 1;
 
     die "Specify correct '--samtools_path'\n"
         unless -e $samtools_path;
@@ -133,6 +142,16 @@ sub extract_start_end_of_full_cds {
         $$coding_regions{$id}{left_pos}  = $$coding_regions{$id}{pos}[0][0];
         $$coding_regions{$id}{right_pos} = $$coding_regions{$id}{pos}[-1][1];
     }
+}
+
+sub get_utr_seq {
+    my ( $id, $coding_regions, $utr_length, $fiveprime, $samtools_path,
+        $genome_fa_file, $chr, $strand )
+        = @_;
+    my ( $utr_start, $utr_end ) =
+      find_utr_boundaries( $$coding_regions{$id}, $utr_length, $fiveprime );
+    return extract_fa_seq( $samtools_path, $genome_fa_file, $chr, $strand,
+        $utr_start, $utr_end );
 }
 
 sub find_utr_boundaries {
@@ -200,14 +219,17 @@ sub trim_seq {
 }
 
 sub combine_seqs {
-    my ( $fiveprime, $threeprime, $utr_seq, $gene_seq ) = @_;
+    my ( $fiveprime, $threeprime, $both, $utr_seq, $gene_seq ) = @_;
 
     my $combo_seq;
     if ($fiveprime) {
-        $combo_seq = "$utr_seq$gene_seq";
+        $combo_seq = $$utr_seq[0] . $gene_seq;
     }
     elsif ($threeprime) {
-        $combo_seq = "$gene_seq$utr_seq";
+        $combo_seq = $gene_seq . $$utr_seq[0];
+    }
+    elsif ($both) {
+        $combo_seq = $$utr_seq[0] . $gene_seq . $$utr_seq[1];
     }
     return $combo_seq;
 }
