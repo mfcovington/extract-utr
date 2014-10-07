@@ -8,13 +8,14 @@ use strict;
 use warnings;
 use autodie;
 use Test::More tests => 3;
+use FindBin qw($Bin);
 
 my $base_extract_cmd = <<CMD;
-../extract-utr.pl \\
-  --gff_file sample-files/ITAG2.3_gene_models.truncated.gff3 \\
-  --cds_fa_file sample-files/ITAG2.3_cds.truncated.fasta \\
-  --genome_fa_file sample-files/ITAG2.3_genomic.truncated.fasta \\
-  --output_fa_file got.fa \\
+$Bin/../extract-utr.pl \\
+  --gff_file $Bin/sample-files/ITAG2.3_gene_models.truncated.gff3 \\
+  --cds_fa_file $Bin/sample-files/ITAG2.3_cds.truncated.fasta \\
+  --genome_fa_file $Bin/sample-files/ITAG2.3_genomic.truncated.fasta \\
+  --output_fa_file $Bin/got.fa \\
 CMD
 my $test_name;
 my $extract_cmd;
@@ -68,16 +69,16 @@ sub compare_extracted_utr {
 
     system($extract_cmd);
 
-    my $expect_file = "sample-files/expect.$test_name.fa";
+    my $expect_file = "$Bin/sample-files/expect.$test_name.fa";
     open my $expect_fh, "<", $expect_file;
     my @expected = <$expect_fh>;
     close $expect_fh;
 
-    open my $got_fh, "<", "got.fa";
+    open my $got_fh, "<", "$Bin/got.fa";
     my @got = <$got_fh>;
     close $got_fh;
 
     is_deeply( \@got, \@expected, $test_name );
 
-    unlink "got.fa";
+    unlink "$Bin/got.fa";
 }
