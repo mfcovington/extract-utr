@@ -7,7 +7,7 @@
 use strict;
 use warnings;
 use autodie;
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 my $base_extract_cmd = <<CMD;
 ../extract-utr.pl \\
@@ -45,6 +45,10 @@ compare_extracted_utr( $extract_cmd, $test_name );
 
 $test_name = "500-5prime+no-cds";
 $extract_cmd = "$base_extract_cmd --fiveprime --gene_length 0";
+compare_extracted_utr( $extract_cmd, $test_name );
+
+$test_name = "500-5prime+full-cds+500-3prime";
+$extract_cmd = "$base_extract_cmd --both";
 compare_extracted_utr( $extract_cmd, $test_name );
 
 sub compare_extracted_utr {
