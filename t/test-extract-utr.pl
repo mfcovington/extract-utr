@@ -7,7 +7,7 @@
 use strict;
 use warnings;
 use autodie;
-use Test::More tests => 8;
+use Test::More tests => 3;
 
 my $base_extract_cmd = <<CMD;
 ../extract-utr.pl \\
@@ -19,37 +19,49 @@ CMD
 my $test_name;
 my $extract_cmd;
 
-$test_name = "500-cds+500-3prime";
-$extract_cmd = "$base_extract_cmd --threeprime";
-compare_extracted_utr( $extract_cmd, $test_name );
+subtest "5'-UTR extractions" => sub {
+    plan tests => 3;
 
-$test_name = "500-cds+500-3prime.60wide";
-$extract_cmd = "$base_extract_cmd --fa_width 60 --threeprime";
-compare_extracted_utr( $extract_cmd, $test_name );
+    $test_name   = "500-5prime+full-cds";
+    $extract_cmd = "$base_extract_cmd --fiveprime --gene_length -1";
+    compare_extracted_utr( $extract_cmd, $test_name );
 
-$test_name = "full-cds+500-3prime";
-$extract_cmd = "$base_extract_cmd --gene_length -1 --threeprime";
-compare_extracted_utr( $extract_cmd, $test_name );
+    $test_name   = "500-5prime+500-cds";
+    $extract_cmd = "$base_extract_cmd --fiveprime";
+    compare_extracted_utr( $extract_cmd, $test_name );
 
-$test_name = "no-cds+500-3prime";
-$extract_cmd = "$base_extract_cmd --gene_length 0 --threeprime";
-compare_extracted_utr( $extract_cmd, $test_name );
+    $test_name   = "500-5prime+no-cds";
+    $extract_cmd = "$base_extract_cmd --fiveprime --gene_length 0";
+    compare_extracted_utr( $extract_cmd, $test_name );
+};
 
-$test_name = "500-5prime+500-cds";
-$extract_cmd = "$base_extract_cmd --fiveprime";
-compare_extracted_utr( $extract_cmd, $test_name );
+subtest "3'-UTR extractions" => sub {
+    plan tests => 3;
 
-$test_name = "500-5prime+full-cds";
-$extract_cmd = "$base_extract_cmd --fiveprime --gene_length -1";
-compare_extracted_utr( $extract_cmd, $test_name );
+    $test_name   = "full-cds+500-3prime";
+    $extract_cmd = "$base_extract_cmd --gene_length -1 --threeprime";
+    compare_extracted_utr( $extract_cmd, $test_name );
 
-$test_name = "500-5prime+no-cds";
-$extract_cmd = "$base_extract_cmd --fiveprime --gene_length 0";
-compare_extracted_utr( $extract_cmd, $test_name );
+    $test_name   = "500-cds+500-3prime";
+    $extract_cmd = "$base_extract_cmd --threeprime";
+    compare_extracted_utr( $extract_cmd, $test_name );
 
-$test_name = "500-5prime+full-cds+500-3prime";
-$extract_cmd = "$base_extract_cmd --both";
-compare_extracted_utr( $extract_cmd, $test_name );
+    $test_name   = "no-cds+500-3prime";
+    $extract_cmd = "$base_extract_cmd --gene_length 0 --threeprime";
+    compare_extracted_utr( $extract_cmd, $test_name );
+};
+
+subtest "Special cases" => sub {
+    plan tests => 2;
+
+    $test_name   = "500-cds+500-3prime.60wide";
+    $extract_cmd = "$base_extract_cmd --fa_width 60 --threeprime";
+    compare_extracted_utr( $extract_cmd, $test_name );
+
+    $test_name   = "500-5prime+full-cds+500-3prime";
+    $extract_cmd = "$base_extract_cmd --both";
+    compare_extracted_utr( $extract_cmd, $test_name );
+};
 
 sub compare_extracted_utr {
     my ( $extract_cmd, $test_name ) = @_;
