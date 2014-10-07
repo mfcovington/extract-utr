@@ -17,7 +17,6 @@ my $gff_file = glob "~/git.repos/sample-files/annotation/ITAG2.3_gene_models.gff
 my $cds_fa_file    = "~/git.repos/sample-files/fa/ITAG2.3_cds.fasta";
 my $genome_fa_file = "~/git.repos/sample-files/fa/ITAG2.3_genomic.fasta";
 my $output_fa_file = "out.fa";
-my $samtools_path  = glob "~/installs/bin/samtools";
 
 my $utr_length  = 500;
 my $gene_length = 500;
@@ -31,7 +30,6 @@ my $options = GetOptions(
     "cds_fa_file=s"    => \$cds_fa_file,
     "genome_fa_file=s" => \$genome_fa_file,
     "output_fa_file=s" => \$output_fa_file,
-    "samtools_path=s"  => \$samtools_path,
     "utr_length=i"     => \$utr_length,
     "gene_length=i"    => \$gene_length,
     "fa_width=i"       => \$fa_width,
@@ -40,7 +38,7 @@ my $options = GetOptions(
     "both"             => \$both,
 );
 
-check_options( $fiveprime, $threeprime, $both, $samtools_path );
+check_options( $fiveprime, $threeprime, $both );
 
 my $coding_regions = extract_cds_from_gff($gff_file);
 
@@ -54,14 +52,14 @@ for my $id ( sort keys %$coding_regions ) {
     my $utr_seq = [];
     if ( $both ) {
         $$utr_seq[0] = get_utr_seq( $id, $coding_regions, $utr_length, 1,
-            $samtools_path, $genome_fa_file, $chr, $strand );
+            $genome_fa_file, $chr, $strand );
         $$utr_seq[1] = get_utr_seq( $id, $coding_regions, $utr_length, 0,
-            $samtools_path, $genome_fa_file, $chr, $strand );
+            $genome_fa_file, $chr, $strand );
     }
     else {
         $$utr_seq[0]
             = get_utr_seq( $id, $coding_regions, $utr_length, $fiveprime,
-            $samtools_path, $genome_fa_file, $chr, $strand );
+            $genome_fa_file, $chr, $strand );
     }
 
     my $combo_seq;
@@ -69,7 +67,7 @@ for my $id ( sort keys %$coding_regions ) {
         $combo_seq = $$utr_seq[0];
     }
     else {
-        my $gene_seq = extract_fa_seq( $samtools_path, $cds_fa_file, $id );
+        my $gene_seq = extract_fa_seq( $cds_fa_file, $id );
         $gene_seq
             = trim_seq( $gene_seq, $gene_length, $fiveprime, $threeprime,
             $both );
@@ -85,15 +83,12 @@ close $output_fa_fh;
 exit;
 
 sub check_options {
-    my ( $fiveprime, $threeprime, $both, $samtools_path ) = @_;
+    my ( $fiveprime, $threeprime, $both ) = @_;
 
     my $def_count = 0;
     map { $def_count++ if defined $_ } $fiveprime, $threeprime, $both;
     die "Specify '--fiveprime', '--threeprime', OR '--both'\n"
         unless $def_count == 1;
-
-    die "Specify correct '--samtools_path'\n"
-        unless -e $samtools_path;
 }
 
 sub extract_cds_from_gff {
@@ -145,13 +140,13 @@ sub extract_start_end_of_full_cds {
 }
 
 sub get_utr_seq {
-    my ( $id, $coding_regions, $utr_length, $fiveprime, $samtools_path,
-        $genome_fa_file, $chr, $strand )
+    my ( $id, $coding_regions, $utr_length, $fiveprime, $genome_fa_file,
+        $chr, $strand )
         = @_;
     my ( $utr_start, $utr_end ) =
       find_utr_boundaries( $$coding_regions{$id}, $utr_length, $fiveprime );
-    return extract_fa_seq( $samtools_path, $genome_fa_file, $chr, $strand,
-        $utr_start, $utr_end );
+    return extract_fa_seq( $genome_fa_file, $chr, $strand, $utr_start,
+        $utr_end );
 }
 
 sub find_utr_boundaries {
@@ -183,13 +178,12 @@ sub find_utr_boundaries {
 }
 
 sub extract_fa_seq {
-    my ( $samtools_path, $fa_file, $seqid, $strand, $left_pos, $right_pos )
-        = @_;
+    my ( $fa_file, $seqid, $strand, $left_pos, $right_pos ) = @_;
 
     my $faidx_cmd =
       defined $left_pos && defined $right_pos
-      ? "$samtools_path faidx $fa_file $seqid:$left_pos-$right_pos"
-      : "$samtools_path faidx $fa_file $seqid";
+      ? "samtools faidx $fa_file $seqid:$left_pos-$right_pos"
+      : "samtools faidx $fa_file $seqid";
 
     my ( $fa_header, @fa_seq ) = `$faidx_cmd`;
     chomp @fa_seq;
