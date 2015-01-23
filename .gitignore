@@ -2,4 +2,5 @@
 *.fasta
 *.gff3
 *.zip
+repro-archive/
 !t/sample-files/*
