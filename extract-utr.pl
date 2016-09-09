@@ -123,7 +123,7 @@ sub build_coding_regions_hash {
           ( split /\t/, $feature )[ 0, 2 .. 4, 6, 8 ];
         next unless $type eq "CDS";
 
-        my ($gene) = $attributes =~ /Parent=(?:mRNA:)?([^;]+)/;
+        my ($gene) = $attributes =~ /Parent=(?:mRNA:|transcript:)?([^;]+)/;
         $$coding_regions{$gene}{chr}    = $chr;
         $$coding_regions{$gene}{strand} = $strand;
         push @{ $$coding_regions{$gene}{pos} }, [ $start, $end ];
