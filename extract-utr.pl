@@ -40,6 +40,8 @@ my $options = GetOptions(
 
 check_options( $fiveprime, $threeprime, $both );
 
+$gff_file = glob $gff_file;
+
 my $coding_regions = extract_cds_from_gff($gff_file);
 
 open my $output_fa_fh, ">", $output_fa_file;
