@@ -8,6 +8,7 @@ use strict;
 use warnings;
 use autodie;
 use feature 'say';
+use List::Util 'sum';
 use Number::RangeTracker;
 
 use FindBin;
@@ -32,6 +33,28 @@ my $chromosomal_ranges = merge_chromosomal_ranges($coding_regions);
 
 p $coding_regions;
 
+my $alignment_fh;
+if ( $alignment_file =~ /.+\.sam$/i ) {
+    open $alignment_fh, "<", $alignment_file;
+}
+elsif ( $alignment_file =~ /.+\.bam$/i ) {
+    open $alignment_fh, "-|", "samtools view -h $alignment_file";
+}
+else {    # Should never happen because validate_options()
+    die "File '$alignment_file' is not a .sam/.bam file\n";
+}
+
+
+while (<$alignment_fh>) {
+    next if /^@/;
+
+    my ( $seq_id, $aln_left, $cigar ) = (split)[ 2, 3, 5 ];
+    next if $seq_id =~ /^\*$/;    # skip unmapped reads
+
+    my $aln_right = $aln_left + get_alignment_length_from_cigar($cigar) - 1;
+}
+
+close $alignment_fh;
 exit;
 
 sub convert_coding_regions_to_three_prime {
@@ -185,6 +208,20 @@ sub convert_coding_regions_to_three_prime {
         $$coding_regions{$gene}{'range'} = Number::RangeTracker->new;
         $$coding_regions{$gene}{'range'}->add(@new_pos);
     }
+}
+
+sub get_alignment_length_from_cigar {
+    my $cigar = shift;
+
+    my $matches    = sum( $cigar =~ /(\d+)M/g ) // 0;
+    my $insertions = sum( $cigar =~ /(\d+)I/g ) // 0;
+    my $deletions  = sum( $cigar =~ /(\d+)D/g ) // 0;
+
+    my @unsupported = $cigar =~ /(\d+[^DIM\d])/g;
+    warn "Currently unsupported CIGAR scores detected: @unsupported\n"
+        if @unsupported;
+
+    return $matches + $deletions - $insertions;
 }
 
 sub merge_chromosomal_ranges {
