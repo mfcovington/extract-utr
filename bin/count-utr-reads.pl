@@ -52,6 +52,11 @@ while (<$alignment_fh>) {
     next if $seq_id =~ /^\*$/;    # skip unmapped reads
 
     my $aln_right = $aln_left + get_alignment_length_from_cigar($cigar) - 1;
+
+    next unless exists $$chromosomal_ranges{$seq_id};
+    next
+        unless $$chromosomal_ranges{$seq_id}->is_in_range($aln_left)
+        or $$chromosomal_ranges{$seq_id}->is_in_range($aln_right);
 }
 
 close $alignment_fh;
