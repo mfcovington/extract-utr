@@ -11,7 +11,7 @@ use Test::More tests => 3;
 use FindBin qw($Bin);
 
 my $base_extract_cmd = <<CMD;
-$Bin/../extract-utr.pl \\
+$Bin/../bin/extract-utr.pl \\
   --gff_file $Bin/sample-files/ITAG2.3_gene_models.truncated.gff3 \\
   --cds_fa_file $Bin/sample-files/ITAG2.3_cds.truncated.fasta \\
   --genome_fa_file $Bin/sample-files/ITAG2.3_genomic.truncated.fasta \\
