@@ -8,6 +8,7 @@ use strict;
 use warnings;
 use autodie;
 use feature 'say';
+use Number::RangeTracker;
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
@@ -179,5 +180,8 @@ sub convert_coding_regions_to_three_prime {
         }
 
         $$coding_regions{$gene}{'pos'} = \@new_pos;
+
+        $$coding_regions{$gene}{'range'} = Number::RangeTracker->new;
+        $$coding_regions{$gene}{'range'}->add(@new_pos);
     }
 }
