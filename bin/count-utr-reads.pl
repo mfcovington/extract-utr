@@ -28,6 +28,7 @@ p $coding_regions;
 
 convert_coding_regions_to_three_prime( $coding_regions, $cds_length,
     $utr_length );
+my $chromosomal_ranges = merge_chromosomal_ranges($coding_regions);
 
 p $coding_regions;
 
@@ -184,4 +185,24 @@ sub convert_coding_regions_to_three_prime {
         $$coding_regions{$gene}{'range'} = Number::RangeTracker->new;
         $$coding_regions{$gene}{'range'}->add(@new_pos);
     }
+}
+
+sub merge_chromosomal_ranges {
+    my $coding_regions = shift;
+    my %chromosomal_ranges;
+
+    for my $gene ( keys %$coding_regions ) {
+        my $chr = $$coding_regions{$gene}{'chr'};
+
+        $chromosomal_ranges{$chr} = Number::RangeTracker->new
+            unless exists $chromosomal_ranges{$chr};
+        $chromosomal_ranges{$chr}
+            ->add( $$coding_regions{$gene}{'range'}->output );
+    }
+
+    for my $chr ( keys %chromosomal_ranges ) {
+        $chromosomal_ranges{$chr}->collapse;
+    }
+
+    return \%chromosomal_ranges;
 }
