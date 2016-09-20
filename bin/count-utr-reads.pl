@@ -33,6 +33,13 @@ my $chromosomal_ranges = merge_chromosomal_ranges($coding_regions);
 
 p $coding_regions;
 
+my %genes_per_chromosome;
+my %gene_counts;
+for my $gene ( sort keys %$coding_regions ) {
+    push @{$genes_per_chromosome{$$coding_regions{$gene}{'chr'}}}, $gene;
+    $gene_counts{$gene} = 0;
+}
+
 my $alignment_fh;
 if ( $alignment_file =~ /.+\.sam$/i ) {
     open $alignment_fh, "<", $alignment_file;
@@ -57,6 +64,13 @@ while (<$alignment_fh>) {
     next
         unless $$chromosomal_ranges{$seq_id}->is_in_range($aln_left)
         or $$chromosomal_ranges{$seq_id}->is_in_range($aln_right);
+
+    for my $gene ( @{$genes_per_chromosome{$seq_id}} ) {
+        next
+            unless $$coding_regions{$gene}{'range'}->is_in_range($aln_left)
+            or $$coding_regions{$gene}{'range'}->is_in_range($aln_right);
+        $gene_counts{$gene}++;
+    }
 }
 
 close $alignment_fh;
