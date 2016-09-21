@@ -29,7 +29,7 @@ convert_coding_regions_to_three_prime( $coding_regions, $cds_length,
 my %genes;
 
 for my $transcript_id ( keys %$coding_regions ) {
-    my ($gene_id) = split /_/, $transcript_id;
+    my ($gene_id) = split /$transcript_delimiter/, $transcript_id;
 
     if ( exists $genes{$gene_id} ) {
         $genes{$gene_id}{'left_pos'} = min( $genes{$gene_id}{'left_pos'},
