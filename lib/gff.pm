@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use autodie;
+use List::Util qw(min max);
 use Number::RangeTracker;
 
 sub build_coding_regions_hash {
@@ -164,11 +165,11 @@ sub convert_coding_regions_to_three_prime {
         }
         else {
             $utr = [
-                $$coding_regions{$gene}{'left_pos'} - 500,
-                $$coding_regions{$gene}{'left_pos'} - 1
+                max( 0, $$coding_regions{$gene}{'left_pos'} - 500 ),
+                max( 0, $$coding_regions{$gene}{'left_pos'} - 1 )
             ];
             unshift @new_pos, $utr;
-            $$coding_regions{$gene}{'left_pos'} -= 500;
+            $$coding_regions{$gene}{'left_pos'} = $$utr[0];
         }
 
         $$coding_regions{$gene}{'pos'} = \@new_pos;
