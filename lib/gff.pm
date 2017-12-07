@@ -8,6 +8,7 @@ sub build_coding_regions_hash {
     my ( $coding_regions, $gff_fh ) = @_;
 
     while ( my $feature = <$gff_fh> ) {
+        chomp $feature;
         next if $feature =~ /^#/;
         my ( $chr, $type, $start, $end, $strand, $attributes ) =
           ( split /\t/, $feature )[ 0, 2 .. 4, 6, 8 ];
